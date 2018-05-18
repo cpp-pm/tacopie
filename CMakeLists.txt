@@ -45,7 +45,7 @@ project(${PROJECT} CXX)
 # compilation options
 ###
 IF (WIN32)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W3 /O2")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W3 /O2 /bigobj")
 
   # was causing conflics with gtest build
   string(REPLACE "/RTC1" "" CMAKE_CXX_FLAGS_DEBUG ${CMAKE_CXX_FLAGS_DEBUG})
@@ -89,12 +89,12 @@ include_directories(${TACOPIE_INCLUDES})
 ###
 # sources
 ###
-set(SRC_DIRS "sources" "sources/network" "sources/utils" "includes/tacopie" "includes/tacopie/network" "includes/tacopie/utils")
+set(SRC_DIRS "sources" "sources/network" "sources/network/common" "sources/utils" "includes/tacopie" "includes/tacopie/network" "includes/tacopie/utils")
 
 IF (WIN32)
-  set(SRC_DIRS ${SRC_DIRS} "sources/network/windows" "includes/tacopie/network/windows")
+  set(SRC_DIRS ${SRC_DIRS} "sources/network/windows")
 ELSE ()
-  set(SRC_DIRS ${SRC_DIRS} "sources/network/unix" "includes/tacopie/network/unix")
+  set(SRC_DIRS ${SRC_DIRS} "sources/network/unix")
 ENDIF (WIN32)
 
 foreach(dir ${SRC_DIRS})
@@ -119,7 +119,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 ###
 # executable
 ###
-add_library(${PROJECT} STATIC ${SOURCES})
+add_library(${PROJECT} ${SOURCES})
 
 IF (WIN32)
    set_target_properties(${PROJECT}
@@ -147,6 +147,11 @@ ENDIF (CONNECTION_QUEUE_SIZE)
 IF (IO_SERVICE_NB_WORKERS)
   set_target_properties(${PROJECT} PROPERTIES COMPILE_DEFINITIONS "__TACOPIE_IO_SERVICE_NB_WORKERS=${IO_SERVICE_NB_WORKERS}")
 ENDIF(IO_SERVICE_NB_WORKERS)
+
+#__TACOPIE_TIMEOUT
+IF (SELECT_TIMEOUT)
+  set_target_properties(${PROJECT} PROPERTIES COMPILE_DEFINITIONS "__TACOPIE_TIMEOUT=${SELECT_TIMEOUT}")
+ENDIF(SELECT_TIMEOUT)
 
 
 ###
